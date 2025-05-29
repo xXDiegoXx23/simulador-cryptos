@@ -1,0 +1,525 @@
+{% extends 'layout.html' %}
+{% block content %}
+<style>
+    .status-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .status-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .status-subtitle {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .status-card {
+        background: rgba(15, 15, 15, 0.9);
+        backdrop-filter: blur(20px);
+        border-radius: 1.25rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .status-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.9);
+        border-color: rgba(0, 255, 136, 0.3);
+    }
+
+    .status-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #00ff88, #00d4ff, #ff6b00);
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #00ff88;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .financial-stat {
+        margin-bottom: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .financial-stat:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+    }
+
+    .stat-value {
+        color: #ffffff;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .profit-positive {
+        background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 700;
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+    }
+
+    .profit-negative {
+        background: linear-gradient(135deg, #ff6b00 0%, #ff0080 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 700;
+        text-shadow: 0 0 10px rgba(255, 107, 0, 0.3);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #00d4ff;
+        margin: 2rem 0 1.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .balance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .crypto-balance {
+        background: rgba(20, 20, 20, 0.8);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .crypto-balance:hover {
+        transform: translateY(-2px);
+        border-color: rgba(0, 212, 255, 0.4);
+        box-shadow: 0 8px 24px rgba(0, 212, 255, 0.2);
+    }
+
+    .crypto-balance::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #00d4ff, #00ff88);
+    }
+
+    .crypto-name {
+        color: #00d4ff;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .crypto-amount {
+        color: #ffffff;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    .crypto-symbol {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+    }
+
+    .info-banner {
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 255, 136, 0.05) 100%);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #00d4ff, #00ff88);
+    }
+
+    .info-banner-title {
+        color: #00d4ff;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-banner-text {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 0.5rem;
+    }
+
+    .info-banner-link {
+        color: #00ff88;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .info-banner-link:hover {
+        color: #00d4ff;
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin: 2rem 0;
+        flex-wrap: wrap;
+    }
+
+    .modern-button {
+        background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+        color: #000000;
+        border: none;
+        border-radius: 0.75rem;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .modern-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 255, 136, 0.4);
+        color: #000000;
+        text-decoration: none;
+    }
+
+    .modern-button.secondary {
+        background: rgba(20, 20, 20, 0.8);
+        color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .modern-button.secondary:hover {
+        background: rgba(30, 30, 30, 0.9);
+        color: #ffffff;
+        border-color: rgba(0, 212, 255, 0.4);
+        box-shadow: 0 8px 24px rgba(0, 212, 255, 0.2);
+    }
+
+    .info-section {
+        background: rgba(15, 15, 15, 0.9);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        margin-top: 2rem;
+        overflow: hidden;
+    }
+
+    .info-summary {
+        padding: 1.25rem;
+        cursor: pointer;
+        background: rgba(0, 212, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        font-weight: 600;
+        color: #00d4ff;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-summary:hover {
+        background: rgba(0, 212, 255, 0.1);
+    }
+
+    .info-content {
+        padding: 1.5rem;
+    }
+
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: rgba(20, 20, 20, 0.6);
+        border-radius: 0.5rem;
+        border-left: 3px solid transparent;
+    }
+
+    .info-item:nth-child(1) { border-left-color: #00ff88; }
+    .info-item:nth-child(2) { border-left-color: #00d4ff; }
+    .info-item:nth-child(3) { border-left-color: #ff6b00; }
+    .info-item:nth-child(4) { border-left-color: #ff0080; }
+
+    .info-text {
+        flex: 1;
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.5;
+    }
+
+    .info-text strong {
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    /* Footer optimization */
+   .page-content {
+    margin-bottom: 60px; 
+}
+
+    /* Compact footer styles */
+   .compact-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;    
+    font-size: 0.75rem;      
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    z-index: 1000;
+    height: 40px;            
+    line-height: 40px;       
+    box-sizing: border-box;
+}
+
+
+    /* Alternative: Minimal inline footer */
+    .minimal-footer {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 0.8rem;
+        padding: 1rem 0;
+        margin-top: 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Hide footer on small screens */
+    @media (max-width: 768px) {
+        .compact-footer {
+            display: none;
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .status-title {
+            font-size: 1.5rem;
+        }
+
+        .status-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .balance-grid {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .modern-button {
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="page-content">
+<div class="status-header">
+    <h2 class="status-title">📈 Estado de la Inversión</h2>
+    <p class="status-subtitle">Monitorea tu portafolio de criptomonedas</p>
+</div>
+
+<div class="status-grid">
+    <div class="status-card">
+        <h4 class="card-title">💰 Resumen Financiero</h4>
+        
+        <div class="financial-stat">
+            <div class="stat-label">Euros Invertidos:</div>
+            <div class="stat-value">{{ "%.2f"|format(euros_invertidos) }} EUR</div>
+        </div>
+        
+        <div class="financial-stat">
+            <div class="stat-label">Valor Actual Total:</div>
+            <div class="stat-value">{{ "%.2f"|format(valor_actual_total) }} EUR</div>
+        </div>
+        
+        <div class="financial-stat">
+            <div class="stat-label">Ganancia/Pérdida:</div>
+            <div class="stat-value">
+                {% if ganancia_perdida >= 0 %}
+                    <span class="profit-positive">
+                        +{{ "%.2f"|format(ganancia_perdida) }} EUR
+                        (+{{ "%.1f"|format((ganancia_perdida/euros_invertidos)*100) if euros_invertidos > 0 else "0.0" }}%)
+                    </span>
+                {% else %}
+                    <span class="profit-negative">
+                        {{ "%.2f"|format(ganancia_perdida) }} EUR
+                        ({{ "%.1f"|format((ganancia_perdida/euros_invertidos)*100) if euros_invertidos > 0 else "0.0" }}%)
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="status-card">
+        <h4 class="card-title">🏦 Estado de Capital</h4>
+        
+        <div class="financial-stat">
+            <div class="stat-label">Euros Atrapados:</div>
+            <div class="stat-value">{{ "%.2f"|format(saldo_euros_invertidos) }} EUR</div>
+        </div>
+        
+        <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem; margin-top: 1rem; font-style: italic;">
+            Dinero invertido que aún está en criptomonedas
+        </div>
+    </div>
+</div>
+
+{% if balances %}
+<h3 class="section-title">🪙 Tus Criptomonedas</h3>
+<div class="balance-grid">
+    {% for crypto, balance in balances.items() %}
+    <div class="crypto-balance">
+        <div class="crypto-name">{{ crypto }}</div>
+        <div class="crypto-amount">{{ "%.8f"|format(balance) }}</div>
+        <div class="crypto-symbol">{{ crypto }}</div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="status-card">
+    <div class="card-title">🤷‍♂️ Sin Criptomonedas</div>
+    <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 1rem;">
+        <strong>No tienes criptomonedas en tu cartera</strong>
+    </p>
+    <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">
+        Realiza tu primera compra desde la página de <a href="/purchase" class="info-banner-link">Compra</a>
+    </p>
+</div>
+{% endif %}
+
+{% if euros_invertidos == 0 %}
+<div class="info-banner">
+    <div class="info-banner-title">ℹ️ Información:</div>
+    <div class="info-banner-text">
+        Aún no has realizado ninguna inversión.
+    </div>
+    <a href="/purchase" class="info-banner-link">¡Comienza invirtiendo aquí!</a>
+</div>
+{% endif %}
+
+<div class="action-buttons">
+    <a href="/" class="modern-button secondary">← Volver a Movimientos</a>
+    <a href="/purchase" class="modern-button">💳 Nueva Operación</a>
+</div>
+
+<details class="info-section">
+    <summary class="info-summary">📊 Cómo se calculan estos valores</summary>
+    <div class="info-content">
+        <ul class="info-list">
+            <li class="info-item">
+                <div class="info-text">
+                    <strong>Euros Invertidos:</strong> Total de EUR gastados comprando cryptos
+                </div>
+            </li>
+            <li class="info-item">
+                <div class="info-text">
+                    <strong>Euros Atrapados:</strong> Euros invertidos menos euros recuperados (vendidos)
+                </div>
+            </li>
+            <li class="info-item">
+                <div class="info-text">
+                    <strong>Valor Actual:</strong> Euros recuperados + valor actual de tus cryptos en EUR
+                </div>
+            </li>
+            <li class="info-item">
+                <div class="info-text">
+                    <strong>Ganancia/Pérdida:</strong> Diferencia entre valor actual y euros invertidos
+                </div>
+            </li>
+        </ul>
+    </div>
+</details>
+</div>
+
+
+
+
+
+{% endblock %}

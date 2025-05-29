@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Simulador de Cryptos</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #000000;
+            --card-bg: rgba(15, 15, 15, 0.9);
+            --card-bg-hover: rgba(25, 25, 25, 0.95);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --accent-color: #00ff88;
+            --accent-secondary: #ff6b00;
+            --gradient-primary: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+            --gradient-secondary: linear-gradient(135deg, #ff6b00 0%, #ff0080 100%);
+            --shadow-glow: 0 0 30px rgba(0, 255, 136, 0.2);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        body {
+            background: #000000;
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+      
+        nav {
+            background: rgba(0, 0, 0, 0.98);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        nav ul {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0 2rem;
+        }
+
+        nav ul:first-child {
+            flex: 1;
+        }
+
+        nav ul:last-child {
+            gap: 2rem;
+        }
+
+        nav strong {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-1px);
+        }
+
+        nav a.active {
+            color: var(--accent-color);
+            background: rgba(0, 255, 136, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        /* Contenedor principal */
+        main {
+            flex: 1;
+            padding: 1.5rem;
+            max-width: 100vw;
+            width: 100%;
+            margin: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Mensajes flash modernos */
+        .flash-messages {
+            margin-bottom: 1rem;
+        }
+
+        .flash-success, .flash-error {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: none;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .flash-success {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 212, 255, 0.1) 100%);
+            color: var(--accent-color);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .flash-error {
+            background: linear-gradient(135deg, rgba(255, 107, 0, 0.2) 0%, rgba(255, 0, 128, 0.1) 100%);
+            color: var(--accent-secondary);
+            border: 1px solid rgba(255, 107, 0, 0.3);
+        }
+
+        /* Tarjetas de estado */
+        .status-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+        }
+
+        .status-card:hover {
+            background: var(--card-bg-hover);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+
+        /* Grid de balances */
+        .balance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .crypto-balance {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .crypto-balance:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow);
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+
+        .crypto-balance::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--gradient-primary);
+            opacity: 0.5;
+        }
+
+        /* Footer optimizado para desktop */
+        footer {
+            text-align: center;
+            padding: 0.6rem 1rem;        
+            border-top: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(15px);
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            font-size: 0.85rem;          /* Tamaño legible en desktop */
+            line-height: 1.2;            /* Mejor legibilidad */
+            font-weight: 400;            /* Peso estándar */
+            user-select: none;
+            height: auto;
+            min-height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.9;                /* Más visible en desktop */
+        }
+
+        footer small {
+            margin: 0;
+            padding: 0;
+            font-size: inherit;          /* Hereda el tamaño del footer */
+            font-weight: inherit;        /* Consistencia de peso */
+        }
+
+        /* Animaciones */
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(0, 255, 136, 0.4);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                padding: 0 1rem;
+            }
+
+            nav ul:last-child {
+                gap: 1rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .balance-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            nav strong {
+                font-size: 1.25rem;
+            }
+
+            /* Footer compacto solo en móvil */
+            footer {
+                padding: 0.4rem 0.5rem;     /* Más compacto solo en móvil */
+                font-size: 0.75rem;         /* Texto más pequeño en móvil */
+            }
+        }
+
+        /* Scroll personalizado */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><strong>myCRYPTO</strong></li>
+        </ul>
+        <ul>
+            <li><a href="/" class="{{ 'active' if request.endpoint == 'index' else '' }}">Inicio</a></li>
+            <li><a href="/purchase" class="{{ 'active' if request.endpoint == 'purchase' else '' }}">Compra</a></li>
+            <li><a href="/status" class="{{ 'active' if request.endpoint == 'status' else '' }}">Estado</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- Mensajes flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}
+        <!-- Contenido de ejemplo para mostrar el layout -->
+        <div class="status-card">
+            <h2>Dashboard Principal</h2>
+            <p>Bienvenido a tu simulador de criptomonedas</p>
+            
+            <div class="balance-grid">
+                <div class="crypto-balance">
+                    <h3>Bitcoin</h3>
+                    <p>0.0023 BTC</p>
+                    <small>~$150.00 USD</small>
+                </div>
+                <div class="crypto-balance">
+                    <h3>Ethereum</h3>
+                    <p>0.15 ETH</p>
+                    <small>~$320.00 USD</small>
+                </div>
+                <div class="crypto-balance">
+                    <h3>Solana</h3>
+                    <p>2.5 SOL</p>
+                    <small>~$280.00 USD</small>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+    </main>
+</body>
+</html>

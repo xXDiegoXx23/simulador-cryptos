@@ -1,0 +1,276 @@
+{% extends 'layout.html' %}
+{% block content %}
+<style>
+    .movements-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .movements-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        margin: 0;
+    }
+
+    .movements-count {
+        background: rgba(0, 255, 136, 0.1);
+        color: #00ff88;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+
+    .modern-table-container {
+        background: rgba(20, 20, 20, 0.8);
+        backdrop-filter: blur(20px);
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .modern-table-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #00ff88, #00d4ff, #ff6b00);
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: transparent;
+        margin: 0;
+    }
+
+    .modern-table thead {
+        background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 212, 255, 0.05) 100%);
+    }
+
+    .modern-table th {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-weight: 600;
+        color: #00ff88;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: none;
+        border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+        position: relative;
+    }
+
+    .modern-table th:first-child {
+        border-top-left-radius: 1rem;
+    }
+
+    .modern-table th:last-child {
+        border-top-right-radius: 1rem;
+    }
+
+    .modern-table td {
+        padding: 1rem 1.5rem;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .modern-table tbody tr {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .modern-table tbody tr:hover {
+        background: rgba(0, 255, 136, 0.05);
+        transform: scale(1.01);
+        box-shadow: 0 4px 20px rgba(0, 255, 136, 0.1);
+    }
+
+    .modern-table tbody tr:hover td {
+        color: #ffffff;
+    }
+
+    .modern-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .modern-table tbody tr:last-child td:first-child {
+        border-bottom-left-radius: 1rem;
+    }
+
+    .modern-table tbody tr:last-child td:last-child {
+        border-bottom-right-radius: 1rem;
+    }
+
+    /* Estilos para las columnas específicas */
+    .modern-table td:nth-child(3) { /* De */
+        color: #ff6b00;
+        font-weight: 600;
+    }
+
+    .modern-table td:nth-child(4) { /* Cantidad */
+        color: #00d4ff;
+        font-weight: 600;
+        text-align: right;
+    }
+
+    .modern-table td:nth-child(5) { /* A */
+        color: #00ff88;
+        font-weight: 600;
+    }
+
+    .modern-table td:nth-child(6) { /* Resultado */
+        font-weight: 700;
+        text-align: right;
+    }
+
+    /* Estado vacío modernizado */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: rgba(20, 20, 20, 0.8);
+        backdrop-filter: blur(20px);
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-state::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #ff6b00, #ff0080);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+        color: #ffffff;
+    }
+
+    .empty-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-message {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 1rem;
+    }
+
+    .pulse-animation {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 0.3;
+        }
+        50% {
+            opacity: 0.6;
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .movements-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .movements-title {
+            font-size: 1.5rem;
+        }
+
+        .modern-table-container {
+            overflow-x: auto;
+        }
+
+        .modern-table th,
+        .modern-table td {
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+        }
+
+        .empty-title {
+            font-size: 1.25rem;
+        }
+    }
+</style>
+
+<div class="movements-header">
+    <h2 class="movements-title">Movimientos</h2>
+    {% if movements %}
+    <div class="movements-count">{{ movements|length }} transacciones</div>
+    {% endif %}
+</div>
+
+{% if movements %}
+<div class="modern-table-container">
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>De</th>
+                <th>Cantidad</th>
+                <th>A</th>
+                <th>Resultado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in movements %}
+            <tr>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+                <td>{{ row[5] }}</td>
+                <td>{{ row[6] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon pulse-animation">📊</div>
+    <div class="empty-title">Sin Movimientos</div>
+    <div class="empty-message">Aún no hay transacciones registradas. ¡Comienza tu primera operación!</div>
+</div>
+{% endif %}
+{% endblock %}
