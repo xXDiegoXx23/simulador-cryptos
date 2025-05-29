@@ -29,7 +29,7 @@ Pasos de instalación
 
 Clonar el repositorio:
 
-bashgit clone [URL_DEL_REPOSITORIO]
+bashgit clone (https://github.com/xXDiegoXx23/simulador-cryptos)
 cd simulador-criptomonedas
 
 Crear entorno virtual:
